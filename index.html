@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Amashi Closet - Billing System</title>
+    <style>
+        /* ========== GLOBAL STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 12px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 24px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* ========== SHOP INFO SECTION ========== */
+        .shop-info {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .shop-info input {
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            width: 100%;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-info input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* ========== ITEMS HEADER (DESKTOP) ========== */
+        .items-header {
+            display: none;
+        }
+        
+        /* ========== MAIN CONTENT LAYOUT ========== */
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .buttons-container {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .summary-container {
+            flex: 0 0 auto;
+            position: relative;
+            float: right;
+            margin-left: auto;
+        }
+        
+        /* ========== SUMMARY SECTION ========== */
+        .summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            text-align: center;
+            width: fit-content;
+            min-width: 150px;
+            max-width: 100%;
+            display: inline-block;
+        }
+        
+        .summary-item {
+            padding: 2px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .summary-item h3 {
+            font-size: 14px;
+            margin-bottom: 2px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .summary-item h3 span {
+            font-size: 14px;
+        }
+        
+        .summary-item p {
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        
+        /* ========== ITEM CARD ========== */
+        .item-row {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .item-row:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .item-header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .item-number {
+            background: #667eea;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+        
+        .item-row .item-name {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 16px;
+            background: #f8f9fa;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            text-align: center;
+        }
+        
+        .row-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .item-row .item-price,
+        .item-row .item-qty {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 16px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+        
+        .action-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .item-row .item-total {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 18px;
+            text-align: center;
+            background: #e8f5e9;
+            padding: 14px 12px;
+            border-radius: 14px;
+            border: 2px solid #28a745;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 100%;
+            height: 52px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        .remove-btn:active {
+            transform: translateY(0);
+            background: #b21f2d;
+        }
+        
+        /* ========== BUTTONS ========== */
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            width: 100%;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .print-btn, .clear-btn {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .print-btn {
+            background: #17a2b8;
+            color: white;
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+        
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.4);
+        }
+        
+        .print-btn:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(23, 162, 184, 0.4);
+        }
+        
+        .clear-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(108, 117, 125, 0.4);
+        }
+        
+        .print-btn:active, .clear-btn:active, .add-btn:active, .remove-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* ========== EMPTY MESSAGE ========== */
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 16px;
+            background: #f8f9fa;
+            border-radius: 24px;
+            margin: 20px 0;
+            border: 2px dashed #ccc;
+            line-height: 1.8;
+        }
+        
+        /* ========== TABLET/DESKTOP STYLES ========== */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 32px;
+                margin-bottom: 25px;
+            }
+            
+            .items-header {
+                display: grid;
+                grid-template-columns: 0.5fr 2.5fr 1fr 1fr 1.5fr 0.8fr;
+                gap: 12px;
+                padding: 16px;
+                background: #667eea;
+                color: white;
+                font-weight: bold;
+                border-radius: 14px;
+                margin-bottom: 15px;
+                font-size: 16px;
+            }
+            
+            .items-header span {
+                text-align: center;
+            }
+            
+            .items-header span:first-child {
+                text-align: center;
+            }
+            
+            .items-header span:nth-child(2) {
+                text-align: left;
+            }
+            
+            .item-row {
+                display: grid;
+                grid-template-columns: 0.5fr 2.5fr 1fr 1fr 1.5fr 0.8fr;
+                gap: 12px;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 12px;
+                margin-bottom: 10px;
+                align-items: center;
+                border: 2px solid #e0e0e0;
+            }
+            
+            .item-header-row, .row-fields, .action-row {
+                display: contents;
+            }
+            
+            .item-number {
+                background: #667eea;
+                color: white;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 16px;
+                margin: 0 auto;
+            }
+            
+            .item-row .item-name,
+            .item-row .item-price,
+            .item-row .item-qty {
+                margin: 0;
+                padding: 10px;
+                font-size: 14px;
+                background: white;
+                text-align: center;
+            }
+            
+            .item-row .item-total {
+                padding: 10px;
+                font-size: 16px;
+                white-space: normal;
+                text-align: center;
+            }
+            
+            .remove-btn {
+                height: 42px;
+                font-size: 20px;
+            }
+            
+            .summary {
+                padding: 10px 20px;
+                min-width: 200px;
+            }
+            
+            .summary-item p {
+                font-size: 24px;
+            }
+            
+            .buttons-container {
+                min-width: 300px;
+            }
+        }
+        
+        /* ========== MOBILE STYLES ========== */
+        @media (max-width: 767px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .buttons-container {
+                width: 100%;
+            }
+            
+            .summary-container {
+                width: 100%;
+                float: none;
+                margin-left: 0;
+                display: flex;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .summary-item p {
+                font-size: 18px;
+            }
+            
+            .summary {
+                min-width: 120px;
+                padding: 6px 10px;
+            }
+            
+            .action-row {
+                grid-template-columns: 1.5fr 1fr;
+            }
+            
+            .remove-btn {
+                font-size: 24px;
+            }
+        }
+        
+        /* ========== UTILITY CLASSES ========== */
+        input, button, select {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select option {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>👕</span>
+            <span>Amashi Closet</span>
+            <span>👕</span>
+        </h1>
+        
+        <div class="shop-info">
+            <input type="text" id="customerName" style="text-align: center;" placeholder="👤 Customer Name" autofocus>
+        </div>
+        
+        <div class="items-header">
+            <span>#</span>
+            <span>📦 Item</span>
+            <span>💰 Price</span>
+            <span>🔢 Qty</span>
+            <span>📊 Total</span>
+            <span>🗑️ Remove</span>
+        </div>
+        
+        <div id="itemsList"></div>
+        
+        <div class="main-content">
+            <div class="buttons-container" id="buttonsContainer"></div>
+            <div class="summary-container" id="summaryContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+            
+            // ========== CONSTANTS ==========
+            const ITEM_OPTIONS = ['Bags', 'Shorts', 'Blouse', 'T-shirt', 'Leggings', 'Other'];
+            const PHONE_NUMBER = '071 70 333 47';
+            
+            // ========== UTILITY CLASS ==========
+            class Formatter {
+                static formatNumberWithCommas(number) {
+                    const num = Math.round(parseFloat(number) || 0);
+                    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+                
+                static getCurrentDateTime() {
+                    const now = new Date();
+                    const month = now.getMonth() + 1;
+                    const day = now.getDate();
+                    const year = now.getFullYear();
+                    
+                    let hours = now.getHours();
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    
+                    hours = hours % 12 || 12;
+                    
+                    return `${month}/${day}/${year}, ${hours}:${minutes} ${ampm}`;
+                }
+            }
+            
+            // ========== ITEM MODEL ==========
+            class Item {
+                constructor(id, name = 'T-shirt', price = 0, quantity = 1) {
+                    this.id = id;
+                    this.name = name;
+                    this.price = price;
+                    this.quantity = quantity;
+                }
+                
+                getTotal() {
+                    return (this.price || 0) * (this.quantity || 0);
+                }
+            }
+            
+            // ========== BILLING SERVICE ==========
+            class BillingService {
+                static generateItemsHTML(items) {
+                    return items.map((item, index) => `
+                        <tr>
+                            <td style="text-align: center; font-weight: bold; width: 50px;">${index + 1}</td>
+                            <td style="text-align: center;">${item.name}</td>
+                            <td style="text-align: center;">Rs. ${Formatter.formatNumberWithCommas(item.price)}</td>
+                            <td style="text-align: center;">${item.quantity}</td>
+                            <td style="text-align: center;">Rs. ${Formatter.formatNumberWithCommas(item.getTotal())}</td>
+                        </tr>
+                    `).join('');
+                }
+                
+                static printBill(customerName, dateTime, items, grandTotal) {
+                    const itemsHTML = this.generateItemsHTML(items);
+                    
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Amashi Closet - Bill</title>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <style>
+                                * {
+                                    margin: 0;
+                                    padding: 0;
+                                    box-sizing: border-box;
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                }
+                                body {
+                                    background: #f5f5f5;
+                                    padding: 20px;
+                                    min-height: 100vh;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                }
+                                .bill-card {
+                                    max-width: 850px;
+                                    width: 100%;
+                                    margin: 0 auto;
+                                    background: white;
+                                    border-radius: 30px;
+                                    padding: 30px;
+                                    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                                }
+                                .header {
+                                    text-align: center;
+                                    margin-bottom: 30px;
+                                    border-bottom: 3px solid #667eea;
+                                    padding-bottom: 20px;
+                                }
+                                .header h1 {
+                                    color: #333;
+                                    font-size: 32px;
+                                    margin-bottom: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 10px;
+                                }
+                                .header p {
+                                    color: #666;
+                                    font-size: 18px;
+                                    font-weight: 500;
+                                }
+                                .customer-info {
+                                    background: #f8f9fa;
+                                    padding: 15px 20px;
+                                    border-radius: 15px;
+                                    margin-bottom: 25px;
+                                    text-align: center;
+                                    font-size: 18px;
+                                    color: #333;
+                                    border: 1px solid #e0e0e0;
+                                }
+                                table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    margin-bottom: 30px;
+                                }
+                                th {
+                                    background: #667eea;
+                                    color: white;
+                                    padding: 15px;
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                    text-align: center;
+                                }
+                                th:first-child { border-radius: 15px 0 0 0; }
+                                th:last-child { border-radius: 0 15px 0 0; }
+                                td {
+                                    padding: 12px;
+                                    border-bottom: 2px solid #e0e0e0;
+                                    text-align: center;
+                                }
+                                td:nth-child(2) { text-align: center; }
+                                .total-section {
+                                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                                    color: white;
+                                    padding: 20px;
+                                    border-radius: 20px;
+                                    margin-top: 20px;
+                                    text-align: center;
+                                }
+                                .total-row {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 24px;
+                                    margin: 10px 0;
+                                    gap: 15px;
+                                }
+                                .grand-total {
+                                    font-size: 32px;
+                                    font-weight: bold;
+                                    color: #ffd700;
+                                }
+                                .footer {
+                                    text-align: center;
+                                    margin-top: 30px;
+                                    padding-top: 20px;
+                                    border-top: 2px dashed #ccc;
+                                }
+                                .footer p {
+                                    color: #666;
+                                    font-size: 16px;
+                                    margin: 5px 0;
+                                }
+                                .contact-info {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 15px;
+                                    margin-top: 10px;
+                                    font-size: 18px;
+                                }
+                                .contact-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 5px;
+                                    color: #667eea;
+                                    font-weight: 500;
+                                }
+                                .whatsapp-icon { color: #25D366; font-size: 20px; }
+                                .phone-icon { color: #667eea; font-size: 20px; }
+                                @media print {
+                                    body { background: white; padding: 0; }
+                                    .bill-card { box-shadow: none; padding: 20px; }
+                                }
+                                @media (max-width: 480px) {
+                                    body { padding: 10px; }
+                                    .bill-card { padding: 15px; }
+                                    .header h1 { font-size: 24px; }
+                                    .header p { font-size: 16px; }
+                                    th, td { padding: 8px; font-size: 14px; }
+                                    .grand-total { font-size: 24px; }
+                                    .customer-info { font-size: 16px; }
+                                    .contact-info { flex-direction: column; gap: 8px; font-size: 16px; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="bill-card">
+                                <div class="header">
+                                    <h1><span>👕</span><span>Amashi Closet</span><span>👕</span></h1>
+                                    <p>${dateTime}</p>
+                                </div>
+                                <div class="customer-info">👤 <strong>${customerName}</strong></div>
+                                <table>
+                                    <thead><tr><th>#</th><th>Item</th><th>Price (Rs.)</th><th>Qty</th><th>Total (Rs.)</th></tr></thead>
+                                    <tbody>${itemsHTML}</tbody>
+                                </table>
+                                <div class="total-section">
+                                    <div class="total-row"><span>💰 Total:</span><strong class="grand-total">${grandTotal}</strong></div>
+                                </div>
+                                <div class="footer">
+                                    <p>✨ Thanks for shopping! ✨</p>
+                                    <div class="contact-info">
+                                        <div class="contact-item"><span class="phone-icon">📞</span><span>${PHONE_NUMBER}</span></div>
+                                        <div class="contact-item"><span class="whatsapp-icon">📱</span><span>WhatsApp: ${PHONE_NUMBER}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>window.onload = () => window.print();<\/script>
+                        </body>
+                        </html>
+                    `);
+                    printWindow.document.close();
+                }
+            }
+            
+            // ========== BILLING CONTROLLER ==========
+            class BillingController {
+                constructor() {
+                    this.items = [];
+                    this.itemCount = 0;
+                    this.customerNameInput = document.getElementById('customerName');
+                    this.itemsListElement = document.getElementById('itemsList');
+                    this.buttonsContainer = document.getElementById('buttonsContainer');
+                    this.summaryContainer = document.getElementById('summaryContainer');
+                    
+                    this.initializeUI();
+                    this.attachEvents();
+                    this.loadInitialItem();
+                }
+                
+                initializeUI() {
+                    // Create buttons
+                    this.buttonsContainer.innerHTML = `
+                        <button class="add-btn" id="addItemBtn">
+                            <span>➕</span>
+                            <span>Add Item</span>
+                        </button>
+                        <button class="print-btn" id="printBillBtn">
+                            <span>🖨️</span>
+                            <span>Print Bill</span>
+                        </button>
+                        <button class="clear-btn" id="clearAllBtn">
+                            <span>🔄</span>
+                            <span>Clear All</span>
+                        </button>
+                    `;
+                    
+                    // Create summary
+                    this.summaryContainer.innerHTML = `
+                        <div class="summary">
+                            <div class="summary-item">
+                                <h3><span>💰</span><span>Total</span></h3>
+                                <p id="grandTotal">Rs. 0</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                attachEvents() {
+                    document.getElementById('addItemBtn').addEventListener('click', () => this.addNewItem());
+                    document.getElementById('printBillBtn').addEventListener('click', () => this.printBill());
+                    document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAll());
+                }
+                
+                loadInitialItem() {
+                    this.addNewItem('T-shirt', '', '1');
+                }
+                
+                addNewItem(name = 'T-shirt', price = '', quantity = '1') {
+                    this.removeEmptyMessage();
+                    
+                    this.itemCount++;
+                    const newItem = new Item(this.itemCount, name, parseFloat(price) || 0, parseInt(quantity) || 1);
+                    this.items.push(newItem);
+                    
+                    const itemRow = this.createItemRow(newItem);
+                    this.itemsListElement.appendChild(itemRow);
+                    this.calculateAll();
+                }
+                
+                createItemRow(item) {
+                    const itemRow = document.createElement('div');
+                    itemRow.className = 'item-row';
+                    itemRow.id = `item-${item.id}`;
+                    
+                    const optionsHTML = ITEM_OPTIONS.map(opt => 
+                        `<option value="${opt}" ${item.name === opt ? 'selected' : ''}>${opt}</option>`
+                    ).join('');
+                    
+                    itemRow.innerHTML = `
+                        <div class="item-header-row">
+                            <div class="item-number">${item.id}</div>
+                            <select class="item-name" data-id="${item.id}">
+                                ${optionsHTML}
+                            </select>
+                        </div>
+                        <div class="row-fields">
+                            <input type="number" class="item-price" data-id="${item.id}" placeholder="Price" value="${item.price || ''}" min="0">
+                            <input type="number" class="item-qty" data-id="${item.id}" placeholder="Quantity" value="${item.quantity}" min="1">
+                        </div>
+                        <div class="action-row">
+                            <span class="item-total" id="total-${item.id}">Rs. 0</span>
+                            <button class="remove-btn" data-id="${item.id}">✖</button>
+                        </div>
+                    `;
+                    
+                    // Attach event listeners
+                    itemRow.querySelector('.item-name').addEventListener('change', (e) => this.updateItem(e, 'name'));
+                    itemRow.querySelector('.item-price').addEventListener('input', (e) => this.updateItem(e, 'price'));
+                    itemRow.querySelector('.item-qty').addEventListener('input', (e) => this.updateItem(e, 'quantity'));
+                    itemRow.querySelector('.remove-btn').addEventListener('click', (e) => this.removeItem(e));
+                    
+                    return itemRow;
+                }
+                
+                updateItem(event, field) {
+                    const id = parseInt(event.target.dataset.id);
+                    const item = this.items.find(i => i.id === id);
+                    if (!item) return;
+                    
+                    const value = event.target.value;
+                    
+                    switch(field) {
+                        case 'name': item.name = value; break;
+                        case 'price': item.price = parseFloat(value) || 0; break;
+                        case 'quantity': item.quantity = parseInt(value) || 1; break;
+                    }
+                    
+                    this.calculateAll();
+                }
+                
+                removeItem(event) {
+                    const id = parseInt(event.target.dataset.id);
+                    const itemIndex = this.items.findIndex(i => i.id === id);
+                    if (itemIndex === -1) return;
+                    
+                    this.items.splice(itemIndex, 1);
+                    document.getElementById(`item-${id}`).remove();
+                    
+                    this.reindexItems();
+                    
+                    if (this.items.length === 0) {
+                        this.showEmptyMessage();
+                    }
+                    
+                    this.calculateAll();
+                }
+                
+                reindexItems() {
+                    const rows = document.querySelectorAll('.item-row');
+                    this.itemCount = rows.length;
+                    
+                    rows.forEach((row, index) => {
+                        const newId = index + 1;
+                        const oldId = parseInt(row.id.split('-')[1]);
+                        
+                        row.id = `item-${newId}`;
+                        row.querySelector('.item-number').textContent = newId;
+                        
+                        // Update data-id attributes
+                        row.querySelectorAll('[data-id]').forEach(el => el.dataset.id = newId);
+                        
+                        // Update item in array
+                        const item = this.items.find(i => i.id === oldId);
+                        if (item) item.id = newId;
+                    });
+                }
+                
+                calculateAll() {
+                    let grandTotal = 0;
+                    
+                    this.items.forEach(item => {
+                        const total = item.getTotal();
+                        const totalSpan = document.getElementById(`total-${item.id}`);
+                        if (totalSpan) {
+                            totalSpan.textContent = `Rs. ${Formatter.formatNumberWithCommas(total)}`;
+                        }
+                        grandTotal += total;
+                    });
+                    
+                    document.getElementById('grandTotal').textContent = `Rs. ${Formatter.formatNumberWithCommas(grandTotal)}`;
+                }
+                
+                printBill() {
+                    if (this.items.length === 0) {
+                        alert('⚠️ Please add items first!');
+                        return;
+                    }
+                    
+                    const customerName = this.customerNameInput.value || "Walk-in Customer";
+                    const dateTime = Formatter.getCurrentDateTime();
+                    const grandTotal = document.getElementById('grandTotal').textContent;
+                    
+                    BillingService.printBill(customerName, dateTime, this.items, grandTotal);
+                }
+                
+                clearAll() {
+                    this.items = [];
+                    this.itemCount = 0;
+                    this.itemsListElement.innerHTML = '';
+                    this.customerNameInput.value = '';
+                    this.showEmptyMessage();
+                    document.getElementById('grandTotal').textContent = 'Rs. 0';
+                }
+                
+                removeEmptyMessage() {
+                    const emptyMsg = document.getElementById('emptyMessage');
+                    if (emptyMsg) emptyMsg.remove();
+                }
+                
+                showEmptyMessage() {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'empty-message';
+                    emptyDiv.id = 'emptyMessage';
+                    emptyDiv.innerHTML = '✨ Click <strong>"Add Item"</strong> button to add items';
+                    this.itemsListElement.appendChild(emptyDiv);
+                }
+            }
+            
+            // ========== INITIALIZE APP ==========
+            document.addEventListener('DOMContentLoaded', () => {
+                new BillingController();
+            });
+            
+        })();
+    </script>
+</body>
+</html>
