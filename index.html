@@ -142,17 +142,17 @@
         }
         
         .summary-item h3 {
-            font-size: 14px;
+            font-size: 20px;
             margin-bottom: 2px;
             opacity: 0.9;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 8px;
         }
         
         .summary-item h3 span {
-            font-size: 14px;
+            font-size: 20px;
         }
         
         .summary-item .total-amount {
@@ -165,7 +165,7 @@
         
         .summary-item .total-qty {
             font-size: 16px;
-            font-weight: normal;
+            font-weight: bold;
             opacity: 0.9;
             background: rgba(255, 255, 255, 0.2);
             padding: 4px 10px;
@@ -556,12 +556,21 @@
                 min-width: 220px;
             }
             
+            .summary-item h3 {
+                font-size: 24px;
+            }
+            
+            .summary-item h3 span {
+                font-size: 24px;
+            }
+            
             .summary-item .total-amount {
                 font-size: 28px;
             }
             
             .summary-item .total-qty {
                 font-size: 18px;
+                font-weight: bold;
             }
             
             .buttons-container {
@@ -615,6 +624,7 @@
             
             .summary-item .total-qty {
                 font-size: 14px;
+                font-weight: bold;
             }
             
             .summary {
@@ -731,8 +741,9 @@
             /*  CONSTANTS                                    */
             /*-----------------------------------------------*/
             
-            const ITEM_OPTIONS = ['Bags', 'Shorts', 'Blouse', 'T-shirt', 'Leggings', 'Other'];
-            const PHONE_NUMBER = '071 70 333 47';
+            // Frock සහ Skirt එකතු කළා
+            const ITEM_OPTIONS = ['Bags', 'Shorts', 'Blouse', 'T-shirt', 'Leggings', 'Other', 'Frock', 'Skirt'];
+            const PHONE_NUMBER = '071-70 333 47';
             
             /*-----------------------------------------------*/
             /*  FORMATTER CLASS                              */
@@ -914,6 +925,7 @@
                                 }
                                 .total-qty-badge {
                                     font-size: 18px;
+                                    font-weight: bold;
                                     background: rgba(255, 255, 255, 0.2);
                                     padding: 5px 15px;
                                     border-radius: 30px;
@@ -986,9 +998,9 @@
                                 </table>
                                 <div class="total-section">
                                     <div class="total-row">
-                                        <span>💰 Total:</span>
+                                        <h3><span>💰</span><strong>Total</strong><span>💲</span></h3>
                                         <strong class="grand-total">${grandTotal}</strong>
-                                        <span class="total-qty-badge">📦 Total Items: ${totalQty}</span>
+                                        <span class="total-qty-badge">🧦 Items ${totalQty}</span>
                                     </div>
                                 </div>
                                 <div class="footer">
@@ -1110,9 +1122,9 @@
                     this.summaryContainer.innerHTML = `
                         <div class="summary">
                             <div class="summary-item">
-                                <h3><span>💰</span><span>Total</span></h3>
+                                <h3><span>💰</span><strong>Total</strong><span>💲</span></h3>
                                 <div class="total-amount" id="grandTotal">Rs. 0</div>
-                                <div class="total-qty" id="totalQuantity">📦 Total Items: 0</div>
+                                <div class="total-qty" id="totalQuantity">🧦 Items : 0</div>
                             </div>
                         </div>
                     `;
@@ -1465,7 +1477,7 @@
                     // Update total quantity display
                     const totalQtyElement = document.getElementById('totalQuantity');
                     if (totalQtyElement) {
-                        totalQtyElement.textContent = `📦 Total Items: ${totalQty}`;
+                        totalQtyElement.textContent = `📦 Items : ${totalQty}`;
                     }
                     
                     // Store totalQty for print
@@ -1499,7 +1511,7 @@
                     // Reset total quantity
                     const totalQtyElement = document.getElementById('totalQuantity');
                     if (totalQtyElement) {
-                        totalQtyElement.textContent = '📦 Total Items: 0';
+                        totalQtyElement.textContent = '📦 Items : 0';
                     }
                     
                     // Focus on customer name input after clearing and open keyboard
