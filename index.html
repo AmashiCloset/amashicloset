@@ -10,9 +10,6 @@
     
     <!-- Font Awesome 6 for WhatsApp icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!-- Font Awesome 6 for WhatsApp icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
         /*-----------------------------------------------*/
@@ -244,6 +241,17 @@
             font-size: 16px;
             background: #f8f9fa;
             text-align: center;
+        }
+        
+        /* Mobile number pad styles */
+        .item-row .item-qty {
+            -moz-appearance: textfield;
+        }
+        
+        .item-row .item-qty::-webkit-outer-spin-button,
+        .item-row .item-qty::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         .item-row .item-price.error {
@@ -565,6 +573,23 @@
                 display: flex;
                 justify-content: center;
             }
+            
+            /* Mobile touch improvements */
+            .item-row .item-price,
+            .item-row .item-qty {
+                font-size: 18px;
+                padding: 16px 12px;
+            }
+            
+            .add-btn, .print-btn, .clear-btn {
+                padding: 18px 20px;
+                font-size: 20px;
+            }
+            
+            .remove-btn {
+                height: 60px;
+                font-size: 32px;
+            }
         }
         
         @media (max-width: 380px) {
@@ -595,6 +620,7 @@
             appearance: none;
         }
         
+        /* Remove spinner from number inputs */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -942,7 +968,7 @@
                                     </p>
                                     <div class="contact-info">
                                         <div class="contact-item">
-                                            <i class="fas fa-phone-alt"> |</i>
+                                            <i class="fas fa-phone-alt"></i>
                                             <i class="fab fa-whatsapp"></i>
                                             <span>${PHONE_NUMBER}</span>
                                         </div>
@@ -1047,6 +1073,7 @@
                         `<option value="${opt}" ${item.name === opt ? 'selected' : ''}>${opt}</option>`
                     ).join('');
                     
+                    // Use inputmode="numeric" for mobile number pad
                     itemRow.innerHTML = `
                         <div class="item-header-row">
                             <div class="item-number">${item.id}</div>
@@ -1055,8 +1082,8 @@
                             </select>
                         </div>
                         <div class="row-fields">
-                            <input type="number" class="item-price" data-id="${item.id}" placeholder="Price" value="${item.price || ''}" min="0" step="any">
-                            <input type="number" class="item-qty" data-id="${item.id}" placeholder="Quantity" value="${item.quantity}" min="1" step="1">
+                            <input type="text" class="item-price" data-id="${item.id}" placeholder="Price" value="${item.price || ''}" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="item-qty" data-id="${item.id}" placeholder="Quantity" value="${item.quantity}" inputmode="numeric" pattern="[0-9]*">
                         </div>
                         <div class="action-row">
                             <span class="item-total" id="total-${item.id}">Rs. 0</span>
@@ -1071,7 +1098,19 @@
                     itemRow.querySelector('.item-qty').addEventListener('input', (e) => this.updateItem(e, 'quantity'));
                     itemRow.querySelector('.remove-btn').addEventListener('click', (e) => this.removeItem(e));
                     
+                    // Add keypress handler to ensure only numbers
+                    itemRow.querySelector('.item-price').addEventListener('keypress', (e) => this.allowOnlyNumbers(e));
+                    itemRow.querySelector('.item-qty').addEventListener('keypress', (e) => this.allowOnlyNumbers(e));
+                    
                     return itemRow;
+                }
+                
+                allowOnlyNumbers(e) {
+                    // Allow only digits (0-9)
+                    const charCode = e.which ? e.which : e.keyCode;
+                    if (charCode < 48 || charCode > 57) {
+                        e.preventDefault();
+                    }
                 }
                 
                 removeItem(event) {
@@ -1176,18 +1215,23 @@
                     const item = this.items.find(i => i.id === id);
                     if (!item) return;
                     
-                    const value = event.target.value;
+                    let value = event.target.value;
+                    
+                    // Remove any non-numeric characters
+                    value = value.replace(/[^0-9]/g, '');
                     
                     switch(field) {
                         case 'name': 
-                            item.name = value; 
+                            item.name = event.target.value; 
                             break;
                         case 'price': 
                             item.price = parseFloat(value) || 0;
+                            event.target.value = value; // Update input with clean value
                             this.checkPriceField(event);
                             break;
                         case 'quantity': 
                             item.quantity = parseInt(value) || 1;
+                            event.target.value = value; // Update input with clean value
                             break;
                     }
                     
