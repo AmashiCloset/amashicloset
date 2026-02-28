@@ -1048,23 +1048,26 @@
                 /*-------------------------------------------*/
                 
                 loadInitialItem() {
-                    this.addNewItem('T-shirt', '', '1');
+                    // Load initial item with price field only (no quantity value)
+                    this.addNewItem('T-shirt', '', '');
                 }
                 
-                addNewItem(name = 'T-shirt', price = '', quantity = '1') {
+                addNewItem(name = 'T-shirt', price = '', quantity = '') {
                     this.removeEmptyMessage();
                     
                     this.itemCount++;
-                    const newItem = new Item(this.itemCount, name, parseFloat(price) || 0, parseInt(quantity) || 1);
+                    // Parse quantity only if it has a value, otherwise default to 1 for calculations
+                    const parsedQuantity = quantity === '' ? 1 : parseInt(quantity) || 1;
+                    const newItem = new Item(this.itemCount, name, parseFloat(price) || 0, parsedQuantity);
                     this.items.push(newItem);
                     
-                    const itemRow = this.createItemRow(newItem);
+                    const itemRow = this.createItemRow(newItem, quantity);
                     this.itemsListElement.appendChild(itemRow);
                     this.calculateAll();
                     this.checkPriceErrors();
                 }
                 
-                createItemRow(item) {
+                createItemRow(item, quantityValue = '') {
                     const itemRow = document.createElement('div');
                     itemRow.className = 'item-row';
                     itemRow.id = `item-${item.id}`;
@@ -1074,6 +1077,7 @@
                     ).join('');
                     
                     // Use inputmode="numeric" for mobile number pad
+                    // Set quantity value to empty string for placeholder to show
                     itemRow.innerHTML = `
                         <div class="item-header-row">
                             <div class="item-number">${item.id}</div>
@@ -1083,7 +1087,7 @@
                         </div>
                         <div class="row-fields">
                             <input type="text" class="item-price" data-id="${item.id}" placeholder="Price" value="${item.price || ''}" inputmode="numeric" pattern="[0-9]*">
-                            <input type="text" class="item-qty" data-id="${item.id}" placeholder="Quantity" value="${item.quantity}" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="item-qty" data-id="${item.id}" placeholder="Qty" value="${quantityValue}" inputmode="numeric" pattern="[0-9]*">
                         </div>
                         <div class="action-row">
                             <span class="item-total" id="total-${item.id}">Rs. 0</span>
@@ -1230,8 +1234,13 @@
                             this.checkPriceField(event);
                             break;
                         case 'quantity': 
-                            item.quantity = parseInt(value) || 1;
-                            event.target.value = value; // Update input with clean value
+                            // If quantity is empty, default to 1 for calculations
+                            // But keep the input field empty to show placeholder
+                            item.quantity = value === '' ? 1 : parseInt(value) || 1;
+                            // Don't update the input value if it's empty (to keep placeholder visible)
+                            if (value !== '') {
+                                event.target.value = value;
+                            }
                             break;
                     }
                     
