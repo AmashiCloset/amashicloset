@@ -998,7 +998,20 @@
                     
                     this.initializeUI();
                     this.attachEvents();
-                    this.loadInitialItem();
+                    this.setupEnterKeyNavigation();
+                    
+                    // Show empty message on initial load
+                    this.showEmptyMessage();
+                    
+                    // Focus on customer name input
+                    setTimeout(() => {
+                        this.customerNameInput.focus();
+                        
+                        // For mobile: open keyboard
+                        if ('ontouchstart' in window) {
+                            this.customerNameInput.click();
+                        }
+                    }, 100);
                 }
                 
                 /*-------------------------------------------*/
@@ -1041,16 +1054,124 @@
                     document.getElementById('addItemBtn').addEventListener('click', () => this.addNewItem());
                     document.getElementById('printBillBtn').addEventListener('click', () => this.printBill());
                     document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAll());
+                    
+                    // Add keydown event for customer name Enter key (mobile friendly)
+                    this.customerNameInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.focusOnFirstItemPrice();
+                        }
+                    });
+                }
+                
+                /*-------------------------------------------*/
+                /*  Focus on First Item Price                */
+                /*-------------------------------------------*/
+                
+                focusOnFirstItemPrice() {
+                    const firstItemPrice = document.querySelector('.item-price');
+                    if (firstItemPrice) {
+                        firstItemPrice.focus();
+                        
+                        // For mobile: open keyboard
+                        if ('ontouchstart' in window) {
+                            setTimeout(() => {
+                                firstItemPrice.click();
+                            }, 100);
+                        }
+                    } else {
+                        // If no items exist, focus on Add Item button
+                        document.getElementById('addItemBtn').focus();
+                    }
+                }
+                
+                /*-------------------------------------------*/
+                /*  Enter Key Navigation Setup               */
+                /*-------------------------------------------*/
+                
+                setupEnterKeyNavigation() {
+                    // Listen for keypress events on the document
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            const activeElement = document.activeElement;
+                            
+                            // Customer name input - handled separately above
+                            // Item price input
+                            if (activeElement.classList.contains('item-price')) {
+                                e.preventDefault();
+                                // Find the corresponding qty input in the same item row
+                                const itemRow = activeElement.closest('.item-row');
+                                if (itemRow) {
+                                    const qtyInput = itemRow.querySelector('.item-qty');
+                                    if (qtyInput) {
+                                        qtyInput.focus();
+                                        // For mobile: open keyboard
+                                        if ('ontouchstart' in window) {
+                                            setTimeout(() => {
+                                                qtyInput.click();
+                                            }, 50);
+                                        }
+                                    }
+                                }
+                            }
+                            // Item qty input
+                            else if (activeElement.classList.contains('item-qty')) {
+                                e.preventDefault();
+                                // Find the next item's price input
+                                const itemRow = activeElement.closest('.item-row');
+                                if (itemRow) {
+                                    const nextItemRow = itemRow.nextElementSibling;
+                                    if (nextItemRow && nextItemRow.classList.contains('item-row')) {
+                                        const nextPriceInput = nextItemRow.querySelector('.item-price');
+                                        if (nextPriceInput) {
+                                            nextPriceInput.focus();
+                                            // For mobile: open keyboard
+                                            if ('ontouchstart' in window) {
+                                                setTimeout(() => {
+                                                    nextPriceInput.click();
+                                                }, 50);
+                                            }
+                                        }
+                                    } else {
+                                        // If no next item, focus on Add Item button
+                                        document.getElementById('addItemBtn').focus();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                /*-------------------------------------------*/
+                /*  Focus on New Item Price with Numpad      */
+                /*-------------------------------------------*/
+                
+                focusOnNewItemPrice() {
+                    // Small delay to ensure DOM is updated
+                    setTimeout(() => {
+                        // Get all price inputs
+                        const priceInputs = document.querySelectorAll('.item-price');
+                        if (priceInputs.length > 0) {
+                            // Focus on the last price input (newly added item)
+                            const lastPriceInput = priceInputs[priceInputs.length - 1];
+                            lastPriceInput.focus();
+                            
+                            // For mobile: trigger keyboard
+                            if ('ontouchstart' in window) {
+                                // Create and dispatch a click event to open keyboard
+                                setTimeout(() => {
+                                    lastPriceInput.click();
+                                }, 50);
+                            }
+                        }
+                    }, 100);
                 }
                 
                 /*-------------------------------------------*/
                 /*  Item Management                          */
                 /*-------------------------------------------*/
                 
-                loadInitialItem() {
-                    // Load initial item with price field only (no quantity value)
-                    this.addNewItem('T-shirt', '', '');
-                }
+                // Removed loadInitialItem method - no auto item on load
                 
                 addNewItem(name = 'T-shirt', price = '', quantity = '') {
                     this.removeEmptyMessage();
@@ -1065,6 +1186,9 @@
                     this.itemsListElement.appendChild(itemRow);
                     this.calculateAll();
                     this.checkPriceErrors();
+                    
+                    // Focus on the new item's price input and open numpad
+                    this.focusOnNewItemPrice();
                 }
                 
                 createItemRow(item, quantityValue = '') {
@@ -1285,6 +1409,16 @@
                     this.customerNameInput.value = '';
                     this.showEmptyMessage();
                     document.getElementById('grandTotal').textContent = 'Rs. 0';
+                    
+                    // Focus on customer name input after clearing
+                    setTimeout(() => {
+                        this.customerNameInput.focus();
+                        
+                        // For mobile: open keyboard
+                        if ('ontouchstart' in window) {
+                            this.customerNameInput.click();
+                        }
+                    }, 100);
                 }
                 
                 /*-------------------------------------------*/
