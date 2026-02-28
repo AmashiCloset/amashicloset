@@ -122,12 +122,12 @@
         .summary {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 8px 12px;
+            padding: 12px 16px;
             border-radius: 30px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
             text-align: center;
             width: fit-content;
-            min-width: 150px;
+            min-width: 180px;
             max-width: 100%;
             display: inline-block;
         }
@@ -138,6 +138,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 4px;
         }
         
         .summary-item h3 {
@@ -154,12 +155,23 @@
             font-size: 14px;
         }
         
-        .summary-item p {
-            font-size: 20px;
+        .summary-item .total-amount {
+            font-size: 22px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             word-break: break-word;
             line-height: 1.2;
+        }
+        
+        .summary-item .total-qty {
+            font-size: 16px;
+            font-weight: normal;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
         }
         
         /*-----------------------------------------------*/
@@ -540,12 +552,16 @@
             }
             
             .summary {
-                padding: 10px 20px;
-                min-width: 200px;
+                padding: 15px 25px;
+                min-width: 220px;
             }
             
-            .summary-item p {
-                font-size: 24px;
+            .summary-item .total-amount {
+                font-size: 28px;
+            }
+            
+            .summary-item .total-qty {
+                font-size: 18px;
             }
             
             .buttons-container {
@@ -593,13 +609,17 @@
         }
         
         @media (max-width: 380px) {
-            .summary-item p {
-                font-size: 18px;
+            .summary-item .total-amount {
+                font-size: 20px;
+            }
+            
+            .summary-item .total-qty {
+                font-size: 14px;
             }
             
             .summary {
-                min-width: 120px;
-                padding: 6px 10px;
+                min-width: 140px;
+                padding: 8px 12px;
             }
             
             .action-row {
@@ -784,7 +804,7 @@
                     `).join('');
                 }
                 
-                static printBill(customerName, dateTime, items, grandTotal) {
+                static printBill(customerName, dateTime, items, grandTotal, totalQty) {
                     const itemsHTML = this.generateItemsHTML(items);
                     
                     const printWindow = window.open('', '_blank');
@@ -882,16 +902,22 @@
                                 }
                                 .total-row {
                                     display: flex;
+                                    flex-direction: column;
                                     justify-content: center;
                                     align-items: center;
-                                    font-size: 24px;
-                                    margin: 10px 0;
-                                    gap: 15px;
+                                    gap: 5px;
                                 }
                                 .grand-total {
                                     font-size: 32px;
                                     font-weight: bold;
                                     color: #ffd700;
+                                }
+                                .total-qty-badge {
+                                    font-size: 18px;
+                                    background: rgba(255, 255, 255, 0.2);
+                                    padding: 5px 15px;
+                                    border-radius: 30px;
+                                    display: inline-block;
                                 }
                                 .footer {
                                     text-align: center;
@@ -959,7 +985,11 @@
                                     <tbody>${itemsHTML}</tbody>
                                 </table>
                                 <div class="total-section">
-                                    <div class="total-row"><span>💰 Total:</span><strong class="grand-total">${grandTotal}</strong></div>
+                                    <div class="total-row">
+                                        <span>💰 Total:</span>
+                                        <strong class="grand-total">${grandTotal}</strong>
+                                        <span class="total-qty-badge">📦 Total Items: ${totalQty}</span>
+                                    </div>
                                 </div>
                                 <div class="footer">
                                     <p style="text-align: center; font-size: 14px;">
@@ -1076,12 +1106,13 @@
                         </button>
                     `;
                     
-                    // Create summary
+                    // Create summary with total amount and total quantity
                     this.summaryContainer.innerHTML = `
                         <div class="summary">
                             <div class="summary-item">
                                 <h3><span>💰</span><span>Total</span></h3>
-                                <p id="grandTotal">Rs. 0</p>
+                                <div class="total-amount" id="grandTotal">Rs. 0</div>
+                                <div class="total-qty" id="totalQuantity">📦 Total Items: 0</div>
                             </div>
                         </div>
                     `;
@@ -1417,6 +1448,7 @@
                 
                 calculateAll() {
                     let grandTotal = 0;
+                    let totalQty = 0;
                     
                     this.items.forEach(item => {
                         const total = item.getTotal();
@@ -1425,9 +1457,19 @@
                             totalSpan.textContent = `Rs. ${Formatter.formatNumberWithCommas(total)}`;
                         }
                         grandTotal += total;
+                        totalQty += item.quantity;
                     });
                     
                     document.getElementById('grandTotal').textContent = `Rs. ${Formatter.formatNumberWithCommas(grandTotal)}`;
+                    
+                    // Update total quantity display
+                    const totalQtyElement = document.getElementById('totalQuantity');
+                    if (totalQtyElement) {
+                        totalQtyElement.textContent = `📦 Total Items: ${totalQty}`;
+                    }
+                    
+                    // Store totalQty for print
+                    this.totalQty = totalQty;
                 }
                 
                 /*-------------------------------------------*/
@@ -1443,7 +1485,7 @@
                     const dateTime = Formatter.getCurrentDateTime();
                     const grandTotal = document.getElementById('grandTotal').textContent;
                     
-                    BillingService.printBill(customerName, dateTime, this.items, grandTotal);
+                    BillingService.printBill(customerName, dateTime, this.items, grandTotal, this.totalQty || 0);
                 }
                 
                 clearAll() {
@@ -1453,6 +1495,12 @@
                     this.customerNameInput.value = '';
                     this.showEmptyMessage();
                     document.getElementById('grandTotal').textContent = 'Rs. 0';
+                    
+                    // Reset total quantity
+                    const totalQtyElement = document.getElementById('totalQuantity');
+                    if (totalQtyElement) {
+                        totalQtyElement.textContent = '📦 Total Items: 0';
+                    }
                     
                     // Focus on customer name input after clearing and open keyboard
                     setTimeout(() => {
