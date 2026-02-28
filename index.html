@@ -1003,15 +1003,56 @@
                     // Show empty message on initial load
                     this.showEmptyMessage();
                     
-                    // Focus on customer name input
-                    setTimeout(() => {
-                        this.customerNameInput.focus();
+                    // Focus on customer name input and open keyboard on mobile
+                    this.focusAndOpenKeyboard();
+                }
+                
+                /*-------------------------------------------*/
+                /*  Focus and Open Keyboard on Mobile        */
+                /*-------------------------------------------*/
+                
+                focusAndOpenKeyboard() {
+                    // First, ensure the input is focused
+                    this.customerNameInput.focus();
+                    
+                    // For mobile devices, we need to trigger the keyboard
+                    if ('ontouchstart' in window) {
+                        // Multiple attempts to ensure keyboard opens
+                        const attempts = [100, 300, 600];
                         
-                        // For mobile: open keyboard
-                        if ('ontouchstart' in window) {
+                        attempts.forEach(delay => {
+                            setTimeout(() => {
+                                this.customerNameInput.focus();
+                                
+                                // Create a synthetic click/tap event
+                                const clickEvent = new MouseEvent('click', {
+                                    view: window,
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                this.customerNameInput.dispatchEvent(clickEvent);
+                                
+                                // Also try touch event
+                                if (typeof TouchEvent !== 'undefined') {
+                                    const touchEvent = new TouchEvent('touchstart', {
+                                        bubbles: true,
+                                        cancelable: true
+                                    });
+                                    this.customerNameInput.dispatchEvent(touchEvent);
+                                }
+                                
+                                // Force keyboard by simulating user interaction
+                                this.customerNameInput.select();
+                            }, delay);
+                        });
+                        
+                        // Final attempt after all content is fully loaded
+                        setTimeout(() => {
+                            this.customerNameInput.focus();
+                            this.customerNameInput.select();
                             this.customerNameInput.click();
-                        }
-                    }, 100);
+                        }, 1000);
+                    }
                 }
                 
                 /*-------------------------------------------*/
@@ -1077,6 +1118,7 @@
                         if ('ontouchstart' in window) {
                             setTimeout(() => {
                                 firstItemPrice.click();
+                                firstItemPrice.select();
                             }, 100);
                         }
                     } else {
@@ -1109,6 +1151,7 @@
                                         if ('ontouchstart' in window) {
                                             setTimeout(() => {
                                                 qtyInput.click();
+                                                qtyInput.select();
                                             }, 50);
                                         }
                                     }
@@ -1129,6 +1172,7 @@
                                             if ('ontouchstart' in window) {
                                                 setTimeout(() => {
                                                     nextPriceInput.click();
+                                                    nextPriceInput.select();
                                                 }, 50);
                                             }
                                         }
@@ -1158,9 +1202,9 @@
                             
                             // For mobile: trigger keyboard
                             if ('ontouchstart' in window) {
-                                // Create and dispatch a click event to open keyboard
                                 setTimeout(() => {
                                     lastPriceInput.click();
+                                    lastPriceInput.select();
                                 }, 50);
                             }
                         }
@@ -1410,13 +1454,14 @@
                     this.showEmptyMessage();
                     document.getElementById('grandTotal').textContent = 'Rs. 0';
                     
-                    // Focus on customer name input after clearing
+                    // Focus on customer name input after clearing and open keyboard
                     setTimeout(() => {
                         this.customerNameInput.focus();
                         
                         // For mobile: open keyboard
                         if ('ontouchstart' in window) {
                             this.customerNameInput.click();
+                            this.customerNameInput.select();
                         }
                     }, 100);
                 }
