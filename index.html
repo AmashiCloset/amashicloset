@@ -81,6 +81,68 @@
         }
         
         /*-----------------------------------------------*/
+        /*  PAYMENT SECTION                               */
+        /*-----------------------------------------------*/
+        
+        .payment-section {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .payment-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-row label {
+            font-weight: bold;
+            color: #333;
+            min-width: 100px;
+        }
+        
+        .payment-row input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-row input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .payment-row .balance-amount {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 14px 16px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            border: 2px solid #28a745;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .balance-positive {
+            color: #28a745;
+        }
+        
+        .balance-negative {
+            color: #dc3545;
+        }
+        
+        /*-----------------------------------------------*/
         /*  ITEMS HEADER (DESKTOP)                        */
         /*-----------------------------------------------*/
         
@@ -576,6 +638,10 @@
             .buttons-container {
                 min-width: 300px;
             }
+            
+            .payment-row {
+                flex-direction: row;
+            }
         }
         
         /*-----------------------------------------------*/
@@ -614,6 +680,19 @@
             .remove-btn {
                 height: 60px;
                 font-size: 32px;
+            }
+            
+            .payment-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .payment-row label {
+                margin-bottom: 5px;
+            }
+            
+            .payment-row .balance-amount {
+                text-align: center;
             }
         }
         
@@ -709,6 +788,18 @@
             <input type="text" id="customerName" style="text-align: center;" placeholder="👤 Customer Name (Optional)" autofocus>
         </div>
         
+        <!-- Payment Section -->
+        <div class="payment-section">
+            <div class="payment-row">
+                <label for="paidAmount">💰 Paid Amount :</label>
+                <input type="text" id="paidAmount" placeholder="Paid Amount" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            <div class="payment-row">
+                <label for="balanceAmount">💳 Balance :</label>
+                <div class="balance-amount" id="balanceAmount">Rs. 0</div>
+            </div>
+        </div>
+        
         <!-- Desktop Headers -->
         <div class="items-header">
             <span>#</span>
@@ -741,7 +832,6 @@
             /*  CONSTANTS                                    */
             /*-----------------------------------------------*/
             
-            // Frock සහ Skirt එකතු කළා
             const ITEM_OPTIONS = ['Bags', 'Shorts', 'Blouse', 'T-shirt', 'Leggings', 'Other', 'Frock', 'Skirt'];
             const PHONE_NUMBER = '071-70 333 47';
             
@@ -815,7 +905,7 @@
                     `).join('');
                 }
                 
-                static printBill(customerName, dateTime, items, grandTotal, totalQty) {
+                static printBill(customerName, dateTime, items, grandTotal, totalQty, paidAmount, balance) {
                     const itemsHTML = this.generateItemsHTML(items);
                     
                     const printWindow = window.open('', '_blank');
@@ -931,6 +1021,33 @@
                                     border-radius: 30px;
                                     display: inline-block;
                                 }
+                                .payment-details {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-top: 15px;
+                                    padding: 15px;
+                                    background: #f8f9fa;
+                                    border-radius: 15px;
+                                }
+                                .payment-item {
+                                    text-align: center;
+                                    flex: 1;
+                                }
+                                .payment-item .label {
+                                    font-size: 14px;
+                                    color: #666;
+                                    margin-bottom: 5px;
+                                }
+                                .payment-item .value {
+                                    font-size: 20px;
+                                    font-weight: bold;
+                                }
+                                .balance-positive {
+                                    color: #28a745;
+                                }
+                                .balance-negative {
+                                    color: #dc3545;
+                                }
                                 .footer {
                                     text-align: center;
                                     margin-top: 30px;
@@ -978,6 +1095,7 @@
                                     .grand-total { font-size: 24px; }
                                     .customer-info { font-size: 16px; }
                                     .contact-info { flex-direction: column; gap: 10px; }
+                                    .payment-details { flex-direction: column; gap: 10px; }
                                 }
                             </style>
                         </head>
@@ -986,7 +1104,7 @@
                                 <div class="header">
                                     <h1>
                                         <span>👚</span>
-                                        <span>Amashi Closet</span>
+                                        <span>Amashi Closet - Bale Collection</span>
                                         <span>👗</span>
                                     </h1>
                                     <p>${dateTime}</p>
@@ -1003,6 +1121,21 @@
                                         <span class="total-qty-badge">🧦 Items ${totalQty}</span>
                                     </div>
                                 </div>
+                                
+                                <div class="payment-details">
+                                    <div class="payment-item">
+                                        <div class="label">💰 Paid Amount</div>
+                                        <div class="value">${paidAmount ? `Rs. ${Formatter.formatNumberWithCommas(paidAmount)}` : 'Rs. 0'}</div>
+                                    </div>
+                                    <div class="payment-item">
+                                        <div class="label">💳 Balance</div>
+                                        <div class="value ${balance >= 0 ? 'balance-positive' : 'balance-negative'}">
+                                            ${balance ? `Rs. ${Formatter.formatNumberWithCommas(Math.abs(balance))}` : 'Rs. 0'}
+                                            ${balance < 0 ? ' (Due)' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="footer">
                                     <p style="text-align: center; font-size: 14px;">
                                     ✨ Thanks for Shopping ✨<br>
@@ -1010,7 +1143,7 @@
                                     </p>
                                     <div class="contact-info">
                                         <div class="contact-item">
-                                            <i class="fas fa-phone-alt">|</i>
+                                            <i class="fas fa-phone-alt"></i> | 
                                             <i class="fab fa-whatsapp"></i>
                                             <span>${PHONE_NUMBER}</span>
                                         </div>
@@ -1034,6 +1167,8 @@
                     this.items = [];
                     this.itemCount = 0;
                     this.customerNameInput = document.getElementById('customerName');
+                    this.paidAmountInput = document.getElementById('paidAmount');
+                    this.balanceDisplay = document.getElementById('balanceAmount');
                     this.itemsListElement = document.getElementById('itemsList');
                     this.buttonsContainer = document.getElementById('buttonsContainer');
                     this.summaryContainer = document.getElementById('summaryContainer');
@@ -1045,56 +1180,20 @@
                     // Show empty message on initial load
                     this.showEmptyMessage();
                     
-                    // Focus on customer name input and open keyboard on mobile
-                    this.focusAndOpenKeyboard();
-                }
-                
-                /*-------------------------------------------*/
-                /*  Focus and Open Keyboard on Mobile        */
-                /*-------------------------------------------*/
-                
-                focusAndOpenKeyboard() {
-                    // First, ensure the input is focused
-                    this.customerNameInput.focus();
-                    
-                    // For mobile devices, we need to trigger the keyboard
-                    if ('ontouchstart' in window) {
-                        // Multiple attempts to ensure keyboard opens
-                        const attempts = [100, 300, 600];
+                    // Use requestAnimationFrame for better performance
+                    // and to ensure DOM is fully loaded
+                    requestAnimationFrame(() => {
+                        this.customerNameInput.focus();
                         
-                        attempts.forEach(delay => {
+                        // Only attempt to open keyboard on first load
+                        if ('ontouchstart' in window && !sessionStorage.getItem('keyboardShown')) {
                             setTimeout(() => {
-                                this.customerNameInput.focus();
-                                
-                                // Create a synthetic click/tap event
-                                const clickEvent = new MouseEvent('click', {
-                                    view: window,
-                                    bubbles: true,
-                                    cancelable: true
-                                });
-                                this.customerNameInput.dispatchEvent(clickEvent);
-                                
-                                // Also try touch event
-                                if (typeof TouchEvent !== 'undefined') {
-                                    const touchEvent = new TouchEvent('touchstart', {
-                                        bubbles: true,
-                                        cancelable: true
-                                    });
-                                    this.customerNameInput.dispatchEvent(touchEvent);
-                                }
-                                
-                                // Force keyboard by simulating user interaction
+                                this.customerNameInput.click();
                                 this.customerNameInput.select();
-                            }, delay);
-                        });
-                        
-                        // Final attempt after all content is fully loaded
-                        setTimeout(() => {
-                            this.customerNameInput.focus();
-                            this.customerNameInput.select();
-                            this.customerNameInput.click();
-                        }, 1000);
-                    }
+                                sessionStorage.setItem('keyboardShown', 'true');
+                            }, 300);
+                        }
+                    });
                 }
                 
                 /*-------------------------------------------*/
@@ -1146,6 +1245,45 @@
                             this.focusOnFirstItemPrice();
                         }
                     });
+                    
+                    // Add input event for paid amount to calculate balance
+                    this.paidAmountInput.addEventListener('input', () => this.updateBalance());
+                    this.paidAmountInput.addEventListener('keypress', (e) => this.allowOnlyNumbers(e));
+                }
+                
+                /*-------------------------------------------*/
+                /*  Balance Calculation                      */
+                /*-------------------------------------------*/
+                
+                updateBalance() {
+                    const grandTotalElement = document.getElementById('grandTotal');
+                    const grandTotalText = grandTotalElement ? grandTotalElement.textContent : 'Rs. 0';
+                    const grandTotal = parseFloat(grandTotalText.replace('Rs. ', '').replace(/,/g, '')) || 0;
+                    
+                    // Get paid amount - if empty, treat as 0
+                    const paidAmountValue = this.paidAmountInput.value.replace(/[^0-9]/g, '');
+                    const paidAmount = paidAmountValue === '' ? 0 : parseFloat(paidAmountValue) || 0;
+                    
+                    const balance = paidAmount - grandTotal;
+                    
+                    // Update balance display
+                    this.balanceDisplay.textContent = `Rs. ${Formatter.formatNumberWithCommas(Math.abs(balance))}`;
+                    
+                    // Add class based on balance
+                    if (balance >= 0) {
+                        this.balanceDisplay.classList.add('balance-positive');
+                        this.balanceDisplay.classList.remove('balance-negative');
+                    } else {
+                        this.balanceDisplay.classList.add('balance-negative');
+                        this.balanceDisplay.classList.remove('balance-positive');
+                    }
+                    
+                    // Add text indicator for due amount
+                    if (balance < 0) {
+                        this.balanceDisplay.textContent += ' (Due)';
+                    }
+                    
+                    return balance;
                 }
                 
                 /*-------------------------------------------*/
@@ -1225,6 +1363,12 @@
                                     }
                                 }
                             }
+                            // Paid amount input
+                            else if (activeElement.id === 'paidAmount') {
+                                e.preventDefault();
+                                // Focus on print bill button
+                                document.getElementById('printBillBtn').focus();
+                            }
                         }
                     });
                 }
@@ -1257,8 +1401,6 @@
                 /*-------------------------------------------*/
                 /*  Item Management                          */
                 /*-------------------------------------------*/
-                
-                // Removed loadInitialItem method - no auto item on load
                 
                 addNewItem(name = 'T-shirt', price = '', quantity = '') {
                     this.removeEmptyMessage();
@@ -1482,6 +1624,9 @@
                     
                     // Store totalQty for print
                     this.totalQty = totalQty;
+                    
+                    // Update balance when total changes
+                    this.updateBalance();
                 }
                 
                 /*-------------------------------------------*/
@@ -1497,7 +1642,21 @@
                     const dateTime = Formatter.getCurrentDateTime();
                     const grandTotal = document.getElementById('grandTotal').textContent;
                     
-                    BillingService.printBill(customerName, dateTime, this.items, grandTotal, this.totalQty || 0);
+                    const paidAmountValue = this.paidAmountInput.value.replace(/[^0-9]/g, '');
+                    const paidAmount = paidAmountValue === '' ? 0 : parseFloat(paidAmountValue) || 0;
+                    
+                    const grandTotalValue = parseFloat(grandTotal.replace('Rs. ', '').replace(/,/g, '')) || 0;
+                    const balance = paidAmount - grandTotalValue;
+                    
+                    BillingService.printBill(
+                        customerName, 
+                        dateTime, 
+                        this.items, 
+                        grandTotal, 
+                        this.totalQty || 0,
+                        paidAmount,
+                        balance
+                    );
                 }
                 
                 clearAll() {
@@ -1505,6 +1664,7 @@
                     this.itemCount = 0;
                     this.itemsListElement.innerHTML = '';
                     this.customerNameInput.value = '';
+                    this.paidAmountInput.value = '';
                     this.showEmptyMessage();
                     document.getElementById('grandTotal').textContent = 'Rs. 0';
                     
@@ -1513,6 +1673,9 @@
                     if (totalQtyElement) {
                         totalQtyElement.textContent = '📦 Items : 0';
                     }
+                    
+                    // Reset balance
+                    this.updateBalance();
                     
                     // Focus on customer name input after clearing and open keyboard
                     setTimeout(() => {
@@ -1548,9 +1711,16 @@
             /*  INITIALIZE APP                               */
             /*-----------------------------------------------*/
             
-            document.addEventListener('DOMContentLoaded', () => {
-                new BillingController();
-            });
+            // Ensure this runs only once
+            if (!window.__billingControllerInitialized) {
+                window.__billingControllerInitialized = true;
+                
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => new BillingController());
+                } else {
+                    new BillingController();
+                }
+            }
             
         })();
     </script>
