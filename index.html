@@ -829,11 +829,29 @@
             "use strict";
             
             /*-----------------------------------------------*/
+            /*  AUTO-RELOAD FUNCTION (ONLY ONCE)            */
+            /*-----------------------------------------------*/
+            
+            // Check if this is the first load
+            if (!sessionStorage.getItem('pageLoaded')) {
+                // Set flag to prevent future reloads
+                sessionStorage.setItem('pageLoaded', 'true');
+                // Reload the page once
+                window.location.reload();
+            }
+            
+            /*-----------------------------------------------*/
             /*  CONSTANTS                                    */
             /*-----------------------------------------------*/
             
             const ITEM_OPTIONS = ['Bags', 'Shorts', 'Blouse', 'T-shirt', 'Leggings', 'Other', 'Frock', 'Skirt'];
             const PHONE_NUMBER = '071-70 333 47';
+            
+            /* Month names array */
+            const MONTH_NAMES = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
             
             /*-----------------------------------------------*/
             /*  FORMATTER CLASS                              */
@@ -847,7 +865,7 @@
                 
                 static getCurrentDateTime() {
                     const now = new Date();
-                    const month = now.getMonth() + 1;
+                    const month = MONTH_NAMES[now.getMonth()]; // Get month name from array
                     const day = now.getDate();
                     const year = now.getFullYear();
                     
@@ -857,7 +875,7 @@
                     
                     hours = hours % 12 || 12;
                     
-                    return `${month}/${day}/${year}, ${hours}:${minutes} ${ampm}`;
+                    return `${month} ${day}, ${year}, ${hours}:${minutes} ${ampm}`;
                 }
                 
                 static showToast(message) {
@@ -1104,7 +1122,7 @@
                                 <div class="header">
                                     <h1>
                                         <span>👚</span>
-                                        <span>Amashi Closet - Bale Collection</span>
+                                        <span>Amashi Closet <br> Bale Collection</span>
                                         <span>👗</span>
                                     </h1>
                                     <p>${dateTime}</p>
